@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORGE — Building Men & Families</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b0d;
+  --bg2: #111316;
+  --card: #16181d;
+  --card2: #1d2026;
+  --border: #252830;
+  --border2: #2f3340;
+  --iron: #e8eaf0;
+  --iron-dim: #9095a8;
+  --iron-deep: #5a5f72;
+  --fire: #e85d04;
+  --fire2: #c44e00;
+  --fire-glow: rgba(232,93,4,0.12);
+  --ember: #ff9f1c;
+  --ember-dim: rgba(255,159,28,0.1);
+  --steel: #4a90d9;
+  --steel-dim: rgba(74,144,217,0.1);
+  --forge-green: #2d9e6b;
+  --green-dim: rgba(45,158,107,0.1);
+  --red: #e05252;
+  --gold: #f5c842;
+  --smoke: #1a1c22;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--iron);
+  min-height: 100vh;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* ── TOP NAV ── */
+nav.top {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 680px; z-index: 200;
+  background: rgba(10,11,13,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: 56px; display: flex; align-items: center;
+  padding: 0 18px; justify-content: space-between;
+}
+.forge-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 28px; letter-spacing: 4px; color: var(--fire);
+  line-height: 1;
+}
+.forge-logo span { color: var(--iron-deep); font-size: 11px; letter-spacing: 2px; font-family: 'DM Mono', monospace; display: block; margin-top: -4px; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.streak-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 4px; padding: 5px 12px;
+  font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--fire);
+}
+.level-chip {
+  background: var(--fire-glow); border: 1px solid rgba(232,93,4,0.3);
+  border-radius: 4px; padding: 5px 10px;
+  font-size: 11px; font-weight: 700; color: var(--fire); text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 680px; z-index: 200;
+  background: rgba(10,11,13,0.97);
+  backdrop-filter: blur(16px);
+  border-top: 2px solid var(--border);
+  display: flex; height: 60px;
+}
+.bnav {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+  cursor: pointer; border: none; background: none;
+  color: var(--iron-deep); transition: color 0.15s;
+  font-family: 'DM Sans', sans-serif; position: relative;
+}
+.bnav:hover { color: var(--iron-dim); }
+.bnav.active { color: var(--fire); }
+.bnav.active::before {
+  content: ''; position: absolute; top: 0; left: 20%; right: 20%;
+  height: 2px; background: var(--fire);
+  border-radius: 0 0 3px 3px;
+}
+.bnav-icon { font-size: 19px; }
+.bnav-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+
+/* ── MAIN ── */
+main { margin-top: 56px; margin-bottom: 60px; }
+.page { display: none; }
+.page.active { display: block; animation: rise 0.2s ease; }
+@keyframes rise { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── HERO ── */
+.hero {
+  padding: 28px 18px 24px;
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.hero-bg-text {
+  position: absolute; right: -10px; top: -10px;
+  font-family: 'Bebas Neue', cursive; font-size: 120px; line-height: 1;
+  color: var(--fire); opacity: 0.04; pointer-events: none;
+  user-select: none;
+}
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--fire); margin-bottom: 10px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(36px, 8vw, 52px); letter-spacing: 2px; line-height: 1.05;
+  margin-bottom: 10px; color: var(--iron);
+}
+.hero-title em { color: var(--fire); font-style: normal; }
+.hero-sub { font-size: 14px; color: var(--iron-dim); line-height: 1.65; max-width: 480px; }
+
+/* ── SECTION ── */
+.s { padding: 18px; }
+.s + .s { padding-top: 0; }
+.s-head {
+  font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 2px;
+  color: var(--iron); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.s-head .tag {
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px;
+  background: var(--fire); color: #fff;
+}
+.s-head .tag.green { background: var(--forge-green); }
+.s-head .tag.steel { background: var(--steel); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 16px; margin-bottom: 10px;
+}
+.card.fire-border { border-left: 3px solid var(--fire); }
+.card.green-border { border-left: 3px solid var(--forge-green); }
+.card.steel-border { border-left: 3px solid var(--steel); }
+.card-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 7px;
+}
+.card-title {
+  font-family: 'Bebas Neue', cursive; font-size: 20px; letter-spacing: 1px;
+  line-height: 1.2; margin-bottom: 8px;
+}
+.card-body { font-size: 13px; color: var(--iron-dim); line-height: 1.7; }
+.card-footer {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.pts { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--forge-green); font-weight: 500; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: none; border-radius: 4px;
+  padding: 9px 18px; font-size: 13px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.btn-fire { background: var(--fire); color: #fff; }
+.btn-fire:hover { background: var(--fire2); }
+.btn-green { background: var(--forge-green); color: #fff; }
+.btn-green:hover { background: #25875c; }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--iron-dim); }
+.btn-ghost:hover { border-color: var(--fire); color: var(--fire); }
+.btn-sm { padding: 6px 13px; font-size: 11px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* ── SCORE RING ── */
+.score-block {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.ring-wrap { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+.ring-wrap svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: var(--card2); stroke-width: 8; }
+.ring-fg {
+  fill: none; stroke: var(--fire); stroke-width: 8; stroke-linecap: butt;
+  stroke-dasharray: 283; stroke-dashoffset: 71;
+  filter: drop-shadow(0 0 8px rgba(232,93,4,0.5));
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1);
+}
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ring-num {
+  font-family: 'Bebas Neue', cursive; font-size: 30px; color: var(--fire); line-height: 1; letter-spacing: 1px;
+}
+.ring-lbl { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--iron-deep); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+
+/* ── STAT BARS ── */
+.bars { flex: 1; min-width: 160px; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.bar-lbl { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--iron-deep); width: 80px; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.bar-track { flex: 1; background: var(--card2); border-radius: 1px; height: 4px; }
+.bar-fill { height: 4px; border-radius: 1px; transition: width 1s ease; }
+.bar-val { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--iron-dim); width: 24px; text-align: right; }
+
+/* ── LEVEL BAR ── */
+.lvl { margin: 16px 0 0; }
+.lvl-head { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.lvl-name { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--fire); text-transform: uppercase; letter-spacing: 1px; }
+.lvl-xp { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--iron-deep); }
+.lvl-track { background: var(--card2); border-radius: 1px; height: 6px; }
+.lvl-fill { height: 6px; border-radius: 1px; background: linear-gradient(90deg, var(--fire), var(--ember)); transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+
+/* ── WEEK DOTS ── */
+.week { display: flex; gap: 5px; margin: 12px 0 4px; }
+.day {
+  flex: 1; height: 40px; border-radius: 4px; border: 1px solid var(--border);
+  background: var(--card2); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+}
+.day.done { background: var(--fire); border-color: var(--fire); }
+.day.today { border-color: var(--fire); box-shadow: 0 0 10px rgba(232,93,4,0.2); }
+.day-l { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 500; text-transform: uppercase; color: var(--iron-deep); }
+.day.done .day-l { color: rgba(255,255,255,0.7); }
+.day-i { font-size: 12px; }
+
+/* ── QUOTE ── */
+.quote-block {
+  background: var(--smoke); border-left: 4px solid var(--fire);
+  border-radius: 0 4px 4px 0; padding: 18px 18px 14px;
+  margin-bottom: 10px; position: relative;
+}
+.q-huge { font-family: 'Bebas Neue', cursive; font-size: 80px; color: var(--fire); opacity: 0.1; line-height: 0.5; position: absolute; top: 18px; left: 14px; }
+.q-text { font-size: 15px; line-height: 1.65; font-style: italic; color: var(--iron); padding-left: 6px; margin-bottom: 10px; }
+.q-source { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--fire); text-transform: uppercase; letter-spacing: 1.5px; }
+.q-actions { margin-top: 12px; display: flex; gap: 8px; }
+
+/* ── CHECKLIST ── */
+.cl { list-style: none; }
+.cl li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.cl li:last-child { border-bottom: none; }
+.chk {
+  width: 20px; height: 20px; border-radius: 3px;
+  border: 2px solid var(--border2); flex-shrink: 0;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  margin-top: 2px; transition: all 0.15s;
+}
+.chk:hover { border-color: var(--fire); }
+.chk.done { background: var(--forge-green); border-color: var(--forge-green); }
+.chk.done::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 800; }
+.cl-body { flex: 1; }
+.cl-text { font-size: 14px; line-height: 1.5; }
+.cl-text.done { text-decoration: line-through; color: var(--iron-deep); }
+.cl-meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+.cl-pts { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--forge-green); }
+.cl-cat { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--iron-deep); background: var(--card2); padding: 1px 6px; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── DATA CALLOUT ── */
+.data-box {
+  background: var(--steel-dim); border: 1px solid rgba(74,144,217,0.15);
+  border-radius: 4px; padding: 13px 15px; margin-bottom: 10px;
+  display: flex; gap: 12px;
+}
+.data-box .di { font-size: 18px; flex-shrink: 0; }
+.data-box p { font-size: 13px; color: var(--iron); line-height: 1.6; }
+.data-box strong { color: var(--steel); }
+
+/* ── MINI STATS ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.mstat {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 14px; text-align: center;
+}
+.mstat-num { font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--fire); letter-spacing: 1px; }
+.mstat-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--iron-deep); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+/* ── HABIT ── */
+.habit-block {
+  background: var(--smoke); border: 1px solid var(--border2);
+  border-top: 3px solid var(--fire); border-radius: 4px; padding: 16px; margin-bottom: 10px;
+}
+.habit-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--fire); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+.habit-name { font-family: 'Bebas Neue', cursive; font-size: 20px; letter-spacing: 1px; margin-bottom: 8px; }
+.habit-body { font-size: 13px; color: var(--iron-dim); line-height: 1.65; margin-bottom: 14px; }
+.habit-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+
+/* ── TIPS ── */
+.filter-strip {
+  display: flex; gap: 6px; overflow-x: auto; padding: 12px 18px;
+  border-bottom: 1px solid var(--border); scrollbar-width: none;
+}
+.filter-strip::-webkit-scrollbar { display: none; }
+.ftag {
+  flex-shrink: 0; background: var(--card); border: 1px solid var(--border2);
+  color: var(--iron-deep); border-radius: 2px;
+  padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+}
+.ftag:hover { color: var(--fire); border-color: var(--fire); }
+.ftag.on { background: var(--fire); border-color: var(--fire); color: #fff; }
+
+.tip {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 16px; margin-bottom: 10px;
+  border-left: 3px solid transparent; transition: border-left-color 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+.tip:hover { border-left-color: var(--fire); border-color: var(--border2); }
+.tip-label { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+.tip-title { font-family: 'Bebas Neue', cursive; font-size: 18px; letter-spacing: 1px; margin-bottom: 8px; line-height: 1.2; }
+.tip-body { font-size: 13px; color: var(--iron-dim); line-height: 1.7; }
+.tip-do {
+  margin-top: 11px; padding: 10px 12px; background: var(--card2); border-radius: 3px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--forge-green); line-height: 1.5;
+}
+.tip-do::before { content: '→ '; font-weight: 700; }
+.tip-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+.tpill {
+  font-family: 'DM Mono', monospace; font-size: 9px; background: var(--card2);
+  border: 1px solid var(--border2); color: var(--iron-deep); padding: 2px 7px; border-radius: 2px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ── AGE BADGE ── */
+.age-badge {
+  display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  padding: 2px 7px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px;
+  margin-left: 6px; vertical-align: middle;
+}
+.age-elem { background: rgba(45,158,107,0.15); color: var(--forge-green); border: 1px solid rgba(45,158,107,0.3); }
+.age-teen { background: rgba(74,144,217,0.15); color: var(--steel); border: 1px solid rgba(74,144,217,0.3); }
+.age-both { background: var(--ember-dim); color: var(--ember); border: 1px solid rgba(255,159,28,0.3); }
+
+/* ── COMMUNITY ── */
+.compose-block {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 14px; margin-bottom: 14px;
+}
+.compose-top { display: flex; align-items: center; gap: 10px; margin-bottom: 0; }
+.my-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--fire); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 12px; color: #fff; flex-shrink: 0;
+}
+.compose-btn {
+  flex: 1; background: var(--card2); border: 1px solid var(--border2);
+  color: var(--iron-deep); border-radius: 3px; padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; text-align: left; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.compose-btn:hover { border-color: var(--fire); }
+.compose-form { display: none; margin-top: 12px; }
+.compose-form.open { display: block; }
+.post-ta {
+  width: 100%; background: var(--card2); border: 1px solid var(--border2);
+  color: var(--iron); border-radius: 3px; padding: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; resize: vertical;
+  outline: none; transition: border-color 0.15s; min-height: 90px; line-height: 1.65;
+}
+.post-ta:focus { border-color: var(--fire); }
+.post-ta::placeholder { color: var(--iron-deep); }
+.cat-sel {
+  width: 100%; background: var(--card2); border: 1px solid var(--border2);
+  color: var(--iron); border-radius: 3px; padding: 9px 12px;
+  font-family: 'DM Mono', monospace; font-size: 11px; outline: none; margin: 8px 0;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.post-form-actions { display: flex; gap: 8px; }
+
+/* ── POST CARDS ── */
+.post-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 16px; margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.post-card:hover { border-color: var(--border2); }
+.post-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 11px; }
+.av {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 13px; flex-shrink: 0;
+}
+.post-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
+.post-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--iron-deep); margin-top: 2px; }
+.cat-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  padding: 3px 9px; border-radius: 2px; margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.post-body { font-size: 14px; line-height: 1.7; color: var(--iron); margin-bottom: 12px; }
+.post-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.pact {
+  background: var(--card2); border: 1px solid var(--border);
+  color: var(--iron-deep); border-radius: 3px; padding: 5px 12px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer;
+  transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.pact:hover { border-color: var(--fire); color: var(--fire); }
+.pact.on { border-color: var(--fire); color: var(--fire); background: var(--fire-glow); }
+
+/* ── REPLIES ── */
+.replies { display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+.replies.open { display: block; }
+.reply { display: flex; gap: 10px; margin-bottom: 11px; }
+.rep-av { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; margin-top: 2px; }
+.rep-body { flex: 1; }
+.rep-name { font-weight: 700; font-size: 12px; margin-bottom: 2px; }
+.rep-time { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--iron-deep); margin-left: 6px; }
+.rep-text { font-size: 13px; color: var(--iron-dim); line-height: 1.6; }
+.reply-row { display: flex; gap: 8px; margin-top: 8px; }
+.rep-input {
+  flex: 1; background: var(--card2); border: 1px solid var(--border2);
+  color: var(--iron); border-radius: 3px; padding: 8px 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+  transition: border-color 0.15s;
+}
+.rep-input:focus { border-color: var(--fire); }
+.rep-input::placeholder { color: var(--iron-deep); }
+
+/* ── HUSBAND ── */
+.husband-hero {
+  background: linear-gradient(135deg, #0f0d1a 0%, var(--bg) 70%);
+  padding: 28px 18px 24px; border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.husband-hero::after {
+  content: 'FORGE';
+  position: absolute; right: -20px; top: 0;
+  font-family: 'Bebas Neue', cursive; font-size: 130px; color: #6c47e0; opacity: 0.04;
+  pointer-events: none;
+}
+.quote-block.purple { border-left-color: #8b6cf0; }
+.quote-block.purple .q-huge { color: #8b6cf0; }
+.data-box.purple { background: rgba(139,108,240,0.08); border-color: rgba(139,108,240,0.15); }
+.data-box.purple strong { color: #a78bfa; }
+
+/* ── SCORE PAGE ── */
+.level-row {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 14px 16px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 14px;
+}
+.level-row.current { border-color: rgba(232,93,4,0.4); border-left: 3px solid var(--fire); }
+.level-row.locked { opacity: 0.35; }
+.level-icon { font-size: 22px; width: 40px; height: 40px; background: var(--card2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.level-name { font-family: 'Bebas Neue', cursive; font-size: 16px; letter-spacing: 1px; line-height: 1.2; }
+.level-name.current { color: var(--fire); }
+.level-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--iron-deep); margin-top: 2px; }
+.ach-row {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 13px 15px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 14px;
+}
+.ach-icon { font-size: 22px; width: 40px; height: 40px; background: var(--card2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ach-name { font-weight: 700; font-size: 13px; }
+.ach-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--iron-deep); margin-top: 2px; }
+.ach-row.locked { opacity: 0.3; }
+.ach-badge { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--forge-green); text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(45,158,107,0.4); padding: 2px 7px; border-radius: 2px; white-space: nowrap; }
+
+/* ── EARN TABLE ── */
+.earn-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.earn-row:last-child { border-bottom: none; }
+.earn-pts { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--forge-green); }
+
+/* ── DIVIDER ── */
+.div { height: 1px; background: var(--border); margin: 0 0 16px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 74px; left: 50%; transform: translateX(-50%);
+  background: var(--forge-green); color: #fff; font-weight: 700;
+  padding: 10px 20px; border-radius: 3px; font-family: 'DM Mono', monospace;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+  z-index: 9999; opacity: 0; transition: opacity 0.2s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+.toast.fire { background: var(--fire); }
+
+@media(max-width:400px) { .hero-title { font-size: 32px; } }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top">
+  <div>
+    <div class="forge-logo">FORGE</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--iron-deep);letter-spacing:2px;text-transform:uppercase;margin-top:-2px">Building Men & Families</div>
+  </div>
+  <div class="nav-right">
+    <div class="streak-chip">🔥 <span id="streak-n">7</span></div>
+    <div class="level-chip">Lvl 4</div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════ HOME ═══════════════════ -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <div class="hero-bg-text">DAD</div>
+    <div class="hero-eyebrow" id="hero-date">Thursday · February 26</div>
+    <h1 class="hero-title">Show up.<br>Every day.<br><em>No excuses.</em></h1>
+    <p class="hero-sub">Being a present father isn't a feeling. It's a decision made in the small moments before anyone's watching.</p>
+  </div>
+
+  <!-- SCORE -->
+  <div class="s" style="padding-bottom:0">
+    <div class="card">
+      <div class="score-block">
+        <div class="ring-wrap">
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="45"/>
+            <circle class="ring-fg" cx="50" cy="50" r="45" id="score-ring"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num" id="score-num">750</div>
+            <div class="ring-lbl">Forge Score</div>
+          </div>
+        </div>
+        <div class="bars">
+          <div class="bar-row">
+            <div class="bar-lbl">Connect</div>
+            <div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--fire)"></div></div>
+            <div class="bar-val">82</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl">Routines</div>
+            <div class="bar-track"><div class="bar-fill" style="width:68%;background:var(--forge-green)"></div></div>
+            <div class="bar-val">68</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl">Presence</div>
+            <div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--steel)"></div></div>
+            <div class="bar-val">75</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl">Husband</div>
+            <div class="bar-track"><div class="bar-fill" style="width:60%;background:#8b6cf0"></div></div>
+            <div class="bar-val">60</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-lbl">Tribe</div>
+            <div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--ember)"></div></div>
+            <div class="bar-val">45</div>
+          </div>
+        </div>
+      </div>
+      <div class="lvl">
+        <div class="lvl-head">
+          <div class="lvl-name">⚒ Level 4 — The Consistent Father</div>
+          <div class="lvl-xp" id="xp-text">750 / 1000 XP</div>
+        </div>
+        <div class="lvl-track"><div class="lvl-fill" id="xp-fill" style="width:75%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK -->
+  <div class="s">
+    <div class="s-head">This Week <div class="tag green">Streak</div></div>
+    <div class="week">
+      <div class="day done"><div class="day-l">Mon</div><div class="day-i">✓</div></div>
+      <div class="day done"><div class="day-l">Tue</div><div class="day-i">✓</div></div>
+      <div class="day done"><div class="day-l">Wed</div><div class="day-i">✓</div></div>
+      <div class="day today"><div class="day-l">Thu</div><div class="day-i">⚒</div></div>
+      <div class="day"><div class="day-l">Fri</div><div class="day-i">·</div></div>
+      <div class="day"><div class="day-l">Sat</div><div class="day-i">·</div></div>
+      <div class="day"><div class="day-l">Sun</div><div class="day-i">·</div></div>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="s" style="padding-top:0">
+    <div class="s-head">Today's Fuel</div>
+    <div class="quote-block">
+      <div class="q-huge">"</div>
+      <div class="q-text" id="home-q">It is not what you do for your children, but what you have taught them to do for themselves that will make them successful human beings.</div>
+      <div class="q-source" id="home-qa">— Ann Landers</div>
+      <div class="q-actions">
+        <button class="btn btn-ghost btn-sm" onclick="nextQuote()">↻ Next</button>
+        <button class="btn btn-ghost btn-sm">Share</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY GOALS -->
+  <div class="s" style="padding-top:0">
+    <div class="s-head">Today's Goals <div class="tag">Daily</div></div>
+    <div class="card" style="padding:4px 16px">
+      <ul class="cl" id="home-cl">
+        <li>
+          <div class="chk" onclick="chk(this,10,'connect')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Send your kid a specific mid-day text — a joke, memory, or "thinking of you"</div>
+            <div class="cl-meta"><span class="cl-pts">+10 pts</span><span class="cl-cat">Connect</span><span class="age-badge age-both">All Ages</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,20,'presence')"></div>
+          <div class="cl-body">
+            <div class="cl-text">15 minutes. Phone in another room. Full eyes on your kid. Let them lead.</div>
+            <div class="cl-meta"><span class="cl-pts">+20 pts</span><span class="cl-cat">Presence</span><span class="age-badge age-elem">Ages 5-11</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,15,'presence')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Ride-along or shoulder-to-shoulder activity with your tween/teen today</div>
+            <div class="cl-meta"><span class="cl-pts">+15 pts</span><span class="cl-cat">Presence</span><span class="age-badge age-teen">Ages 12-17</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,10,'connect')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Ask one real question — not "how was school?" (see Forge Tips for 20 options)</div>
+            <div class="cl-meta"><span class="cl-pts">+10 pts</span><span class="cl-cat">Connect</span><span class="age-badge age-both">All Ages</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,15,'husband')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Say one specific, genuine thing to your wife — appreciation, not a task update</div>
+            <div class="cl-meta"><span class="cl-pts">+15 pts</span><span class="cl-cat">Husband</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,15,'routines')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Do your transition ritual before walking inside — 60 seconds to reset</div>
+            <div class="cl-meta"><span class="cl-pts">+15 pts</span><span class="cl-cat">Routine</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,20,'routines')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Bedtime Bridge — "Best part of your day? What are you hoping for tomorrow?"</div>
+            <div class="cl-meta"><span class="cl-pts">+20 pts</span><span class="cl-cat">Routine</span><span class="age-badge age-elem">Ages 5-11</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TONIGHT'S HABIT -->
+  <div class="s" style="padding-top:0">
+    <div class="s-head">Tonight's Forge <div class="tag">5 min</div></div>
+    <div class="habit-block">
+      <div class="habit-head">
+        <div>
+          <div class="habit-label">⚡ Micro-Habit</div>
+          <div class="habit-name">The Arrival Hug Protocol</div>
+        </div>
+        <button class="btn btn-fire btn-sm" id="habit-btn" onclick="habitDone()">Done +20</button>
+      </div>
+      <div class="habit-body">The moment you walk through the door — before you put down your bag, before your phone, before anything — you hug each kid for 6 full seconds. Count it. No shortcuts. This costs zero energy and signals everything: "Work is done. I chose you." Do this for two weeks straight and watch what happens at your front door.</div>
+    </div>
+  </div>
+
+  <!-- DATA -->
+  <div class="s" style="padding-top:0">
+    <div class="s-head">The Real Numbers <div class="tag steel">Research</div></div>
+    <div class="data-box">
+      <div class="di">📊</div>
+      <p><strong>Harvard's Center on the Developing Child:</strong> 15 minutes of fully engaged interaction has greater developmental impact than hours of passive co-presence. You don't need more time. You need better time.</p>
+    </div>
+    <div class="data-box">
+      <div class="di">🧠</div>
+      <p>Kids with working dads who kept <strong>consistent small rituals</strong> — bedtime routines, daily check-ins, weekly one-on-ones — scored higher in emotional security than kids with more total time but less predictability. <em>Consistency beats volume.</em></p>
+    </div>
+    <div class="data-box">
+      <div class="di">📈</div>
+      <p>Teens with present, engaged fathers are <strong>80% less likely</strong> to engage in high-risk behavior. Your presence during these years is the single most powerful protective factor available. Show up.</p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="s" style="padding-top:0">
+    <div class="grid2">
+      <div class="mstat"><div class="mstat-num">🔥 7</div><div class="mstat-lbl">Day Streak</div></div>
+      <div class="mstat"><div class="mstat-num">23</div><div class="mstat-lbl">Goals Hit</div></div>
+      <div class="mstat"><div class="mstat-num">#48</div><div class="mstat-lbl">Tribe Rank</div></div>
+      <div class="mstat"><div class="mstat-num">3</div><div class="mstat-lbl">Traditions</div></div>
+    </div>
+  </div>
+
+</div><!-- /home -->
+
+
+<!-- ═══════════════════ TIPS ═══════════════════ -->
+<div class="page" id="page-tips">
+
+  <div class="hero">
+    <div class="hero-bg-text">TIPS</div>
+    <div class="hero-eyebrow">Forge Playbook</div>
+    <h1 class="hero-title">Less theory.<br>More <em>action.</em></h1>
+    <p class="hero-sub">Tested by real dads. Built for married men with demanding jobs and kids who need them present.</p>
+  </div>
+
+  <div class="filter-strip">
+    <button class="ftag on" onclick="filt(this,'all')">All</button>
+    <button class="ftag" onclick="filt(this,'presence')">Presence</button>
+    <button class="ftag" onclick="filt(this,'connect')">Connection</button>
+    <button class="ftag" onclick="filt(this,'limited')">Limited Time</button>
+    <button class="ftag" onclick="filt(this,'routines')">Routines</button>
+    <button class="ftag" onclick="filt(this,'traditions')">Traditions</button>
+    <button class="ftag" onclick="filt(this,'teens')">Teens 12-17</button>
+    <button class="ftag" onclick="filt(this,'elementary')">Kids 5-11</button>
+  </div>
+
+  <div class="s" id="tips-container">
+
+    <div class="tip" data-c="presence limited">
+      <div class="tip-label" style="color:var(--fire)">Tip 001 · Presence <span class="age-badge age-both">All Ages</span></div>
+      <div class="tip-title">Arrive Before You Walk In the Door</div>
+      <div class="tip-body">Before you open the front door tonight, sit in your car for 60 seconds. Close your eyes. Three deep breaths. Consciously leave work behind. The shift from employee to father is a real mental gear change — and it requires an intentional reset. Your kids feel the difference between a dad who walked in distracted and a dad who actually arrived. The work will be there tomorrow. This moment won't.</div>
+      <div class="tip-do">Every night. Set a recurring reminder: "Arrive before you walk in." 60 seconds. That's it.</div>
+      <div class="tip-pills"><span class="tpill">Working Dad</span><span class="tpill">Evening</span><span class="tpill">Free</span></div>
+    </div>
+
+    <div class="tip" data-c="connect elementary">
+      <div class="tip-label" style="color:var(--forge-green)">Tip 002 · Connection <span class="age-badge age-elem">Ages 5-11</span></div>
+      <div class="tip-title">Kill "How Was School?" — 20 Better Questions</div>
+      <div class="tip-body">The most-asked dad question gets the least information. Your kid's brain hears "how was school?" as a formality — not a real invitation. Replace it tonight with one of these: <em>"What made you laugh today?" / "What was the weirdest thing that happened?" / "Who did you sit with at lunch?" / "If you could change one thing about today, what would it be?" / "What's something you know now that you didn't know this morning?"</em> These aren't questions. They're doors you're opening. Walk through them with genuine curiosity.</div>
+      <div class="tip-do">Write 3 of these in your phone. Rotate them. Commit to one real question every night this week.</div>
+      <div class="tip-pills"><span class="tpill">Daily</span><span class="tpill">Free</span><span class="tpill">Dinner</span></div>
+    </div>
+
+    <div class="tip" data-c="teens connect presence">
+      <div class="tip-label" style="color:var(--steel)">Tip 003 · Teens <span class="age-badge age-teen">Ages 12-17</span></div>
+      <div class="tip-title">Shoulder-to-Shoulder: Why Teens Only Open Up Sideways</div>
+      <div class="tip-body">If you're trying to have meaningful conversations with your teenager face-to-face, you're fighting their biology. Direct eye contact triggers social evaluation anxiety in adolescents — their brain interprets it as confrontation. But sit next to them — in a car, cooking together, playing a game, fixing something — and they open up naturally. The lack of eye contact removes the pressure. The single most effective thing you can do to talk to your teenage kid: <strong>drive them somewhere.</strong> Anywhere. Even to get gas. The car is the confessional booth of fatherhood.</div>
+      <div class="tip-do">This week, invite your teen to ride with you for an errand. Don't force conversation. Just drive. Let them start it. They will.</div>
+      <div class="tip-pills"><span class="tpill">Teens</span><span class="tpill">Proven</span><span class="tpill">Free</span></div>
+    </div>
+
+    <div class="tip" data-c="limited connect routines">
+      <div class="tip-label" style="color:var(--fire)">Tip 004 · Limited Time <span class="age-badge age-both">All Ages</span></div>
+      <div class="tip-title">The 3-Touch System for Brutal Work Weeks</div>
+      <div class="tip-body">When you're grinding 10-hour days and barely seeing your kids, the temptation is to write off the day entirely. Don't. Instead, aim for 3 intentional "touches" every day: <strong>(1)</strong> A warm, specific goodbye in the morning — even 30 seconds, make it real. <strong>(2)</strong> A mid-day text, voice note, or quick photo sent at lunch. <strong>(3)</strong> A genuine goodnight — even if you arrive home after they're asleep, knock softly and say it anyway. These three anchors communicate one critical message: "Even when Dad can't be here, Dad is thinking about me." That message matters more than you know.</div>
+      <div class="tip-do">Set 3 phone alarms right now: "Morning Send-Off," "Midday Touch-In," "Goodnight." Label each one with your kid's name.</div>
+      <div class="tip-pills"><span class="tpill">Working Dad</span><span class="tpill">Daily</span><span class="tpill">Limited Time</span></div>
+    </div>
+
+    <div class="tip" data-c="routines elementary">
+      <div class="tip-label" style="color:var(--forge-green)">Tip 005 · Routines <span class="age-badge age-elem">Ages 5-11</span></div>
+      <div class="tip-title">The Bedtime Bridge — 5 Minutes That Build a Lifetime of Trust</div>
+      <div class="tip-body">Before your child sleeps, sit with them and ask two questions: <em>"What was the best part of your day?"</em> and <em>"What's one thing you're hoping for tomorrow?"</em> Then stop talking. Listen fully. Do not problem-solve. Do not lecture. Do not fix. Just receive what they give you. A child who feels genuinely heard at bedtime sleeps better, wakes up more secure, and over time, begins volunteering the real stuff — the hard stuff — because they've learned you can hold it. This five-minute ritual, done consistently, builds more trust than hours of activities.</div>
+      <div class="tip-do">Start tonight. Ask both questions. Speak half as much as you listen. No exceptions.</div>
+      <div class="tip-pills"><span class="tpill">Bedtime</span><span class="tpill">High Impact</span><span class="tpill">Free</span></div>
+    </div>
+
+    <div class="tip" data-c="traditions connect">
+      <div class="tip-label" style="color:var(--fire)">Tip 006 · Traditions <span class="age-badge age-both">All Ages</span></div>
+      <div class="tip-title">The Annual Solo Day — One Full Day Per Child, Per Year</div>
+      <div class="tip-body">Once a year, take each child individually for a full day — planned entirely around their interests. Not yours. Not the budget. Theirs. Let them pick the food, the activity, the pace. Your job is to show up with your full, unhurried attention and zero agenda. This day communicates something words can't: "You are worth my undivided time. Not shared time. Just yours." Adults in therapy talk about these days for decades. The specific activity is always irrelevant. What's remembered is that Dad showed up and it was just for them.</div>
+      <div class="tip-do">Open your calendar right now. Pick one date per kid in the next 90 days. Block it like a surgery. Non-negotiable.</div>
+      <div class="tip-pills"><span class="tpill">Annual</span><span class="tpill">High Impact</span><span class="tpill">Tradition</span></div>
+    </div>
+
+    <div class="tip" data-c="presence elementary connect">
+      <div class="tip-label" style="color:var(--forge-green)">Tip 007 · Presence <span class="age-badge age-elem">Ages 5-11</span></div>
+      <div class="tip-title">The Floor Test — 15 Minutes That Cost Nothing</div>
+      <div class="tip-body">Sit on the floor in your kid's space. Phone in another room. Say: "I've got 15 minutes — let's do whatever you want." Then actually do it. Fully. Even if it's the same game for the 300th time. Even if it feels pointless. The message is not the activity — it's "I follow your lead, and what matters to you matters to me." For children between 5-11, this is one of the most bonding things a father can do. It builds security, creativity, and a child's fundamental belief that they are worth a grown adult's attention.</div>
+      <div class="tip-do">Do it tonight. Set a timer. Sit on the floor. Let them be in charge. Watch what happens to their face.</div>
+      <div class="tip-pills"><span class="tpill">Evening</span><span class="tpill">Free</span><span class="tpill">High Impact</span></div>
+    </div>
+
+    <div class="tip" data-c="teens limited connect">
+      <div class="tip-label" style="color:var(--steel)">Tip 008 · Teens <span class="age-badge age-teen">Ages 12-17</span></div>
+      <div class="tip-title">Be Interested in What They're Into — Even If It Bores You to Death</div>
+      <div class="tip-body">Your teenager is passionate about something that you probably don't understand and possibly don't care about — a game, a YouTube creator, a sport, a type of music, a show. Here's the truth: it doesn't matter what it is. What matters is that they care about it. And what matters even more is that you ask about it — genuinely. "Teach me how this works." "Who's the best player in this game?" "Why do you like this creator?" The moment a teenager feels like their dad is actually curious about their world, the wall comes down. You don't have to love the thing. You have to love them enough to ask about it.</div>
+      <div class="tip-do">This week: ask your teen to show you one thing they're into. No commentary. Just watch and ask questions.</div>
+      <div class="tip-pills"><span class="tpill">Teens</span><span class="tpill">Connection</span><span class="tpill">Trust-Building</span></div>
+    </div>
+
+    <div class="tip" data-c="traditions routines">
+      <div class="tip-label" style="color:var(--fire)">Tip 009 · Traditions <span class="age-badge age-both">All Ages</span></div>
+      <div class="tip-title">Build Your Family's Signature — The Thing Only You Do</div>
+      <div class="tip-body">Every great family has something that belongs only to them — a Saturday morning ritual, a specific road trip tradition, a made-up game, a phrase they all say, a meal they always make together. These aren't activities. They're identity markers. They say "we are a specific family, and this is what we do." Children who grow up with strong family traditions report higher self-esteem, greater resilience in adversity, and — most powerfully — stronger family loyalty into adulthood. The tradition doesn't have to be elaborate. It has to be consistent.</div>
+      <div class="tip-do">Ask your kids: "What's something we could do every week that's just ours?" Let them help design it. Start this Saturday.</div>
+      <div class="tip-pills"><span class="tpill">Weekly</span><span class="tpill">Legacy</span><span class="tpill">Family Culture</span></div>
+    </div>
+
+    <div class="tip" data-c="limited connect">
+      <div class="tip-label" style="color:var(--forge-green)">Tip 010 · Limited Time <span class="age-badge age-both">All Ages</span></div>
+      <div class="tip-title">Voice Notes: The 90-Second Morning Message</div>
+      <div class="tip-body">If you leave before your kids wake up, record a 90-second voice note the night before. Tell them what you love about them. Wish them luck on their test or game. Tell them something funny. Leave it where they'll find it or send it to your wife to play. This isn't a workaround — this IS presence at a distance. Children who receive consistent positive verbal messages from their fathers — especially specific, personal ones — develop measurably stronger self-worth. The voice note matters because it's your voice. Not a text. Not an emoji. Your voice.</div>
+      <div class="tip-do">Record one tonight before you sleep. Even if it feels awkward. Especially if it feels awkward.</div>
+      <div class="tip-pills"><span class="tpill">Working Dad</span><span class="tpill">Creative</span><span class="tpill">Morning</span></div>
+    </div>
+
+    <div class="tip" data-c="teens routines">
+      <div class="tip-label" style="color:var(--steel)">Tip 011 · Teens <span class="age-badge age-teen">Ages 12-17</span></div>
+      <div class="tip-title">The Late-Night Rule — Stay Up For the Conversations That Actually Matter</div>
+      <div class="tip-body">Teenagers don't open up at 6pm. They open up at 10:30pm. There's actual neuroscience behind this: teen circadian rhythms shift their peak social and emotional processing to late evening. If you go to bed before they're ready to talk, you will miss the real conversations. The solution is uncomfortable for working dads: once a week, stay up later than you want to. Be available. Be awake. Be in a common space with no agenda. You don't even have to initiate. Just be there, alert, and willing. The conversation will come. And when it does — it's worth every minute of lost sleep.</div>
+      <div class="tip-do">Pick one night per week. Stay up. No phone. Be in the kitchen or living room. Let them find you.</div>
+      <div class="tip-pills"><span class="tpill">Teens</span><span class="tpill">Evening</span><span class="tpill">High Yield</span></div>
+    </div>
+
+    <div class="tip" data-c="elementary routines connect">
+      <div class="tip-label" style="color:var(--fire)">Tip 012 · Kids 5-11 <span class="age-badge age-elem">Ages 5-11</span></div>
+      <div class="tip-title">The Dad-Only Activity — Something That's Just Between You Two</div>
+      <div class="tip-body">Create one activity that is exclusively yours and your child's — not Mom's, not the family's, just the two of you. Maybe it's a Saturday morning walk, a video game you play together, a craft, cooking one specific meal together, or a sport you do one-on-one. The exclusivity is the point. It tells the child: "There is something in this world that belongs only to us." This becomes one of the pillars of their identity — "I'm the kid whose dad does X with them" — and it gives them something to look forward to every single week.</div>
+      <div class="tip-do">Ask your child: "What's something we could do together that's just ours?" Start it this week. Protect it fiercely.</div>
+      <div class="tip-pills"><span class="tpill">Ages 5-11</span><span class="tpill">Weekly</span><span class="tpill">High Impact</span></div>
+    </div>
+
+  </div>
+</div><!-- /tips -->
+
+
+<!-- ═══════════════════ HUSBAND ═══════════════════ -->
+<div class="page" id="page-husband">
+
+  <div class="husband-hero">
+    <div class="hero-eyebrow" style="color:#8b6cf0">Marriage × Fatherhood</div>
+    <h1 class="hero-title" style="font-size:clamp(30px,7vw,46px)">How you love her<br>shapes <em>who they become.</em></h1>
+    <p class="hero-sub">Your marriage isn't separate from your parenting. It IS your parenting — playing out in slow motion, every day your kids are watching.</p>
+  </div>
+
+  <div class="s">
+
+    <div class="quote-block purple">
+      <div class="q-huge">"</div>
+      <div class="q-text">The most important thing a father can do for his children is to love their mother. Not perform love. Not manage love. Actually love her — in a way they can see.</div>
+      <div class="q-source">— Adapted from Theodore Hesburgh</div>
+    </div>
+
+    <div class="data-box purple">
+      <div class="di">📊</div>
+      <p>Dr. John Gottman's 40-year longitudinal research shows children who observe a <strong>warm, respectful marriage</strong> score significantly higher in emotional regulation, academic performance, and social confidence — independent of income, neighborhood, or parenting style alone. The marriage IS the intervention.</p>
+    </div>
+
+    <div class="data-box purple">
+      <div class="di">🔬</div>
+      <p>Your children between ages 5-17 are in peak <strong>relational modeling years</strong>. The way you resolve conflict, express affection, handle stress, and treat your wife under pressure becomes their default template for every significant relationship they'll ever have. You are teaching this whether you know it or not.</p>
+    </div>
+
+    <div class="div"></div>
+    <div class="s-head">The Real Husband Playbook</div>
+
+    <div class="tip" style="border-left-color:#8b6cf0">
+      <div class="tip-label" style="color:#8b6cf0">Husband Tip 001</div>
+      <div class="tip-title">The 10-Second Kiss (Gottman's Top Daily Habit)</div>
+      <div class="tip-body">Dr. Gottman prescribes one real, 10-second kiss per day — not a peck, not a hello-and-go. A full, intentional kiss. When your kids see this consistently, they don't just see affection — they feel foundation. Their parents' love becomes the ground beneath their feet. Right now it may feel awkward, performative, or forced. Do it anyway. The awkwardness wears off. The impact doesn't.</div>
+      <div class="tip-do">Do it when you leave. Do it when you return. Every day. Even on bad days. Especially on bad days.</div>
+    </div>
+
+    <div class="tip" style="border-left-color:#8b6cf0">
+      <div class="tip-label" style="color:#8b6cf0">Husband Tip 002</div>
+      <div class="tip-title">The Weekly 20 — Non-Negotiable Marriage Meeting</div>
+      <div class="tip-body">Every week, 20 minutes, no kids, no phones, no logistics. Three questions only: "What's one thing going well in our family right now?" "What's one thing that needs our attention?" "What do you need from me this week?" That's it. When parents are genuinely aligned and emotionally connected, children feel it as physical safety. When parents are disconnected — even silently — children feel that too, and they often blame themselves for it. Twenty minutes a week is the cheapest insurance policy in fatherhood.</div>
+      <div class="tip-do">Propose this to your wife tonight. Pick a night. Put it in the calendar. Protect it like you protect your paycheck.</div>
+    </div>
+
+    <div class="tip" style="border-left-color:#8b6cf0">
+      <div class="tip-label" style="color:#8b6cf0">Husband Tip 003</div>
+      <div class="tip-title">Never Criticize Her in Front of Them. Ever.</div>
+      <div class="tip-body">This is not about manners. This is about architecture. Your sons will treat their future partners the way they watched you treat their mother. Your daughters will accept or reject treatment based on the standard you set. Every eye-roll, every cutting comment, every dismissive tone registers in your children's developing brains as what love looks like. You're building their relationship template in real time. It's not dramatic — it's slow, invisible, and permanent. Guard your language about your wife in front of your kids like it's the most important thing you do. Because it is.</div>
+      <div class="tip-do">This week: one specific compliment about your wife, said out loud, in front of your kids. Watch their faces.</div>
+    </div>
+
+    <div class="tip" style="border-left-color:#8b6cf0">
+      <div class="tip-label" style="color:#8b6cf0">Husband Tip 004</div>
+      <div class="tip-title">The Mental Load Audit — Make the Invisible Visible</div>
+      <div class="tip-body">The "mental load" — the invisible labor of tracking, planning, worrying, and anticipating every family need — lands disproportionately on mothers, and dramatically more so when fathers work long hours. This imbalance doesn't just create resentment. It depletes the parent who's carrying it, which means she's parenting from empty. When a wife feels genuinely seen and supported, she parents from a full place. The ROI for your kids when you take on more of the mental load is enormous — and it's not your wife's job to identify what she needs you to take. Figure it out yourself.</div>
+      <div class="tip-do">Ask your wife one question tonight, and mean it: "Is there something you're carrying that I don't even see?" Then listen. Then act.</div>
+    </div>
+
+    <div class="tip" style="border-left-color:#8b6cf0">
+      <div class="tip-label" style="color:#8b6cf0">Husband Tip 005</div>
+      <div class="tip-title">Date Your Wife — It's Not Romantic Fluff, It's Structural</div>
+      <div class="tip-body">Couples who maintain a weekly date report higher relationship satisfaction, lower divorce rates, better communication — and parent more patiently and warmly. That's not correlation. That's structure. A date doesn't require money or hours. A 45-minute walk after the kids are down counts. What matters is that it's intentional and protected. You're not just keeping your marriage alive — you're showing your kids that the two most important people in their world choose each other on purpose. That image will stay with them forever.</div>
+      <div class="tip-do">Schedule one date in the next 7 days. Anything counts. Just protect it. Don't let the week eat it.</div>
+    </div>
+
+    <div class="div"></div>
+    <div class="s-head">Husband Check-In <div class="tag" style="background:#8b6cf0">+75 pts</div></div>
+    <div class="card" style="padding:4px 16px">
+      <ul class="cl">
+        <li>
+          <div class="chk" onclick="chk(this,15,'husband')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Had a conversation with my wife that wasn't about kids or schedules</div>
+            <div class="cl-meta"><span class="cl-pts">+15 pts</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,20,'husband')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Complimented my wife specifically and genuinely — out loud, in front of the kids</div>
+            <div class="cl-meta"><span class="cl-pts">+20 pts</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,15,'husband')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Took something off her plate without being asked, told, or hinted at</div>
+            <div class="cl-meta"><span class="cl-pts">+15 pts</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="chk" onclick="chk(this,25,'husband')"></div>
+          <div class="cl-body">
+            <div class="cl-text">Planned or had intentional one-on-one time with my wife this week</div>
+            <div class="cl-meta"><span class="cl-pts">+25 pts</span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div><!-- /husband -->
+
+
+<!-- ═══════════════════ TRIBE ═══════════════════ -->
+<div class="page" id="page-tribe">
+
+  <div class="hero" style="background:linear-gradient(135deg,#0a1208,var(--bg) 60%)">
+    <div class="hero-bg-text">TRIBE</div>
+    <div class="hero-eyebrow" style="color:var(--forge-green)">The Forge Tribe</div>
+    <h1 class="hero-title">Real talk.<br>No <em>filters.</em></h1>
+    <p class="hero-sub">503 dads showed up today. No performances here. Say what's actually happening. That's what this is for.</p>
+  </div>
+
+  <div class="s">
+
+    <!-- COMPOSE -->
+    <div class="compose-block">
+      <div class="compose-top">
+        <div class="my-av">ME</div>
+        <button class="compose-btn" onclick="openCompose()">What's actually going on? Share it here.</button>
+      </div>
+      <div class="compose-form" id="compose-form">
+        <textarea class="post-ta" id="post-text" placeholder="Real talk only. Wins, losses, questions, stories — all of it belongs here."></textarea>
+        <select class="cat-sel" id="post-cat">
+          <option value="win">💪 WIN — Something that worked</option>
+          <option value="real">🔥 REAL TALK — Honest struggle</option>
+          <option value="tip">⚒ TIP — Share what you learned</option>
+          <option value="accountability">🪝 ACCOUNTABILITY — Hold me to it</option>
+          <option value="question">❓ QUESTION — Ask the tribe</option>
+          <option value="husband">💍 HUSBAND — Marriage + fatherhood</option>
+        </select>
+        <div class="post-form-actions">
+          <button class="btn btn-fire btn-sm" onclick="submitPost()">Post to Tribe (+20 pts)</button>
+          <button class="btn btn-ghost btn-sm" onclick="closeCompose()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTS -->
+    <div id="feed">
+
+      <div class="post-card">
+        <div class="post-header">
+          <div class="av" style="background:#1a3a1a;color:var(--forge-green)">MR</div>
+          <div style="flex:1">
+            <div class="post-name">Marcus R. <span style="color:var(--fire);font-size:10px;font-family:'DM Mono',monospace">🔥 34 days</span></div>
+            <div class="post-meta">Level 5 · Atlanta, GA · 2hrs ago</div>
+          </div>
+        </div>
+        <div class="cat-pill" style="background:rgba(45,158,107,0.1);color:var(--forge-green)">💪 WIN</div>
+        <div class="post-body">Started the Bedtime Bridge 3 weeks ago. My 13-year-old — who normally grunts at everything I say — sat on the edge of his bed last night and talked to me for 45 minutes. I didn't say much. Just listened.<br><br>At the end he said "Dad, I feel like you actually care about what I think."<br><br>I walked out of his room and stood in the hallway and cried. I'm not ashamed of that. We lost years. We're getting them back. Keep going.</div>
+        <div class="post-acts">
+          <button class="pact" onclick="like(this,47)">🔥 47 Relate</button>
+          <button class="pact" onclick="toggleReplies(this)">💬 8 Replies</button>
+          <button class="pact">🔖 Save</button>
+        </div>
+        <div class="replies" id="">
+          <div class="reply">
+            <div class="rep-av" style="background:#1a2535;color:var(--steel)">TD</div>
+            <div class="rep-body">
+              <div class="rep-name">Thomas D. <span class="rep-time">· 1h ago</span></div>
+              <div class="rep-text">Man. I needed this today. My son is 14 and we've been circling each other for a year. Starting the Bedtime Bridge tonight. Real talk — I'm nervous. But I'm doing it.</div>
+            </div>
+          </div>
+          <div class="reply">
+            <div class="rep-av" style="background:#1a1035;color:#8b6cf0">JL</div>
+            <div class="rep-body">
+              <div class="rep-name">James L. <span class="rep-time">· 45m ago</span></div>
+              <div class="rep-text">The hallway cry is real. I've been there. Those moments are why we're all here. You didn't lose years man — you laid a foundation. Now you're building on it.</div>
+            </div>
+          </div>
+          <div class="reply-row">
+            <input class="rep-input" placeholder="Say something real..." onkeydown="sendReply(event,this)">
+            <button class="btn btn-fire btn-sm" onclick="sendReplyBtn(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <div class="av" style="background:#151a2a;color:var(--steel)">TD</div>
+          <div>
+            <div class="post-name">Thomas D.</div>
+            <div class="post-meta">Level 3 · 5hrs ago</div>
+          </div>
+        </div>
+        <div class="cat-pill" style="background:var(--fire-glow);color:var(--fire)">🔥 REAL TALK</div>
+        <div class="post-body">Working 60+ hours a week in construction season. I'm physically done by 6pm. Kids are still up. I have nothing left. And I can see the distance forming between us — my 8-year-old stopped running to the door when I come home. That hit me like a punch in the chest.<br><br>I'm not here for toxic positivity. I need to know: how do you show up when you literally have nothing left?</div>
+        <div class="post-acts">
+          <button class="pact" onclick="like(this,58)">🔥 58 Relate</button>
+          <button class="pact" onclick="toggleReplies(this)">💬 31 Replies</button>
+          <button class="pact">🔖 Save</button>
+        </div>
+        <div class="replies">
+          <div class="reply">
+            <div class="rep-av" style="background:#1a3a1a;color:var(--forge-green)">MR</div>
+            <div class="rep-body">
+              <div class="rep-name">Marcus R. <span class="rep-time">· 4h ago</span></div>
+              <div class="rep-text">Brother, try the Arrival Hug in the tips. Even when I'm dead — 6 second hug the second I walk in. Before anything. Then I'm honest with them: "Dad's tank is empty tonight, but I wanted you to know you're the first thing I chose when I got home." Being honest about exhaustion is not failure. It's modeling.</div>
+            </div>
+          </div>
+          <div class="reply">
+            <div class="rep-av" style="background:#1a1035;color:#8b6cf0">JL</div>
+            <div class="rep-body">
+              <div class="rep-name">James L. <span class="rep-time">· 3h ago</span></div>
+              <div class="rep-text">Real talk: the distance you're seeing isn't permanent. It's a gap, not a wall. Your kid stopped running to the door because they learned to expect nothing — which means when you show up with something small and consistent, they learn to expect that instead. Consistency overwrites distance. Start small. Tonight.</div>
+            </div>
+          </div>
+          <div class="reply-row">
+            <input class="rep-input" placeholder="Respond with something real..." onkeydown="sendReply(event,this)">
+            <button class="btn btn-fire btn-sm" onclick="sendReplyBtn(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <div class="av" style="background:#1a1500;color:var(--ember)">JL</div>
+          <div>
+            <div class="post-name">James L. <span style="color:var(--gold);font-size:10px;font-family:'DM Mono',monospace">🏆 Top Forge</span></div>
+            <div class="post-meta">Level 6 · Yesterday</div>
+          </div>
+        </div>
+        <div class="cat-pill" style="background:var(--ember-dim);color:var(--ember)">⚒ TIP</div>
+        <div class="post-body">For every dad exhausted from work — something that changed everything for me:<br><br>The Arrival Hug. Walk in the door. No bag. No phone. No shoes. Six seconds, full hug, every kid, every time. I'm not joking when I say my kids start running when they hear my car now.<br><br>My 9-year-old calls it "the squeeze." My 14-year-old still does it — she just acts like she doesn't care. She cares. Don't let the teenager act fool you. Six seconds.</div>
+        <div class="post-acts">
+          <button class="pact on" onclick="like(this,103)">🔥 103 Relate</button>
+          <button class="pact" onclick="toggleReplies(this)">💬 44 Replies</button>
+          <button class="pact">🔖 Save</button>
+        </div>
+        <div class="replies">
+          <div class="reply-row" style="margin-top:0">
+            <input class="rep-input" placeholder="Reply..." onkeydown="sendReply(event,this)">
+            <button class="btn btn-fire btn-sm" onclick="sendReplyBtn(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <div class="av" style="background:#1a1000;color:var(--ember)">KC</div>
+          <div>
+            <div class="post-name">Kevin C.</div>
+            <div class="post-meta">Level 2 · 2 days ago</div>
+          </div>
+        </div>
+        <div class="cat-pill" style="background:rgba(200,169,110,0.1);color:var(--ember)">🔥 REAL TALK</div>
+        <div class="post-body">I grew up without a father. Zero blueprint. Every day I'm making it up and hoping I'm not screwing them up worse than I was screwed up.<br><br>Being here is the first time fatherhood hasn't felt like something I'm failing at alone. You guys are honest about the hard stuff. That matters more than any tip or hack. You're the older brothers I never had.<br><br>That's all. Just wanted to say it.</div>
+        <div class="post-acts">
+          <button class="pact" onclick="like(this,134)">🔥 134 Relate</button>
+          <button class="pact" onclick="toggleReplies(this)">💬 52 Replies</button>
+          <button class="pact">🔖 Save</button>
+        </div>
+        <div class="replies">
+          <div class="reply-row" style="margin-top:0">
+            <input class="rep-input" placeholder="Respond with something real..." onkeydown="sendReply(event,this)">
+            <button class="btn btn-fire btn-sm" onclick="sendReplyBtn(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <div class="av" style="background:#1a1028;color:#8b6cf0">DR</div>
+          <div>
+            <div class="post-name">David R.</div>
+            <div class="post-meta">Level 3 · 3 days ago</div>
+          </div>
+        </div>
+        <div class="cat-pill" style="background:rgba(139,108,240,0.1);color:#8b6cf0">💍 HUSBAND</div>
+        <div class="post-body">My wife told me she feels alone even when I'm home. Said it quietly, not even angry. Just tired.<br><br>I've been physically present and emotionally somewhere else. I thought being in the room was enough. It's not.<br><br>I started the weekly marriage meeting. First one was awkward as hell. We got through it. Second one she cried. Not in a bad way. We're still figuring it out. But for the first time in maybe two years, she knows I'm actually trying. That changed something.</div>
+        <div class="post-acts">
+          <button class="pact" onclick="like(this,78)">🔥 78 Relate</button>
+          <button class="pact" onclick="toggleReplies(this)">💬 23 Replies</button>
+          <button class="pact">🔖 Save</button>
+        </div>
+        <div class="replies">
+          <div class="reply-row" style="margin-top:0">
+            <input class="rep-input" placeholder="Respond with honesty..." onkeydown="sendReply(event,this)">
+            <button class="btn btn-fire btn-sm" onclick="sendReplyBtn(this)">Send</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /feed -->
+  </div>
+</div><!-- /tribe -->
+
+
+<!-- ═══════════════════ SCORE ═══════════════════ -->
+<div class="page" id="page-score">
+
+  <div class="hero" style="background:linear-gradient(135deg,#100a00,var(--bg) 60%)">
+    <div class="hero-bg-text">SCORE</div>
+    <div class="hero-eyebrow" style="color:var(--fire)">The Forge Score</div>
+    <h1 class="hero-title">Every point is a<br><em>day you showed up.</em></h1>
+    <p class="hero-sub">Fatherhood isn't a competition. But intentionality deserves to be counted.</p>
+  </div>
+
+  <div class="s">
+
+    <div class="grid2" style="margin-bottom:10px">
+      <div class="mstat"><div class="mstat-num" id="score-stat">750</div><div class="mstat-lbl">Forge Score</div></div>
+      <div class="mstat"><div class="mstat-num">🔥 7</div><div class="mstat-lbl">Day Streak</div></div>
+      <div class="mstat"><div class="mstat-num">Lvl 4</div><div class="mstat-lbl">Dad Level</div></div>
+      <div class="mstat"><div class="mstat-num">#48</div><div class="mstat-lbl">Tribe Rank</div></div>
+    </div>
+
+    <!-- SCORE BREAKDOWN -->
+    <div class="card fire-border" style="margin-bottom:10px">
+      <div class="card-label" style="color:var(--fire)">Score Breakdown</div>
+      <div style="margin-top:10px">
+        <div class="bar-row" style="margin-bottom:12px"><div class="bar-lbl" style="width:100px">Connection</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--fire)"></div></div><div class="bar-val">82</div></div>
+        <div class="bar-row" style="margin-bottom:12px"><div class="bar-lbl" style="width:100px">Routines</div><div class="bar-track"><div class="bar-fill" style="width:68%;background:var(--forge-green)"></div></div><div class="bar-val">68</div></div>
+        <div class="bar-row" style="margin-bottom:12px"><div class="bar-lbl" style="width:100px">Presence</div><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--steel)"></div></div><div class="bar-val">75</div></div>
+        <div class="bar-row" style="margin-bottom:12px"><div class="bar-lbl" style="width:100px">Husband</div><div class="bar-track"><div class="bar-fill" style="width:60%;background:#8b6cf0"></div></div><div class="bar-val">60</div></div>
+        <div class="bar-row"><div class="bar-lbl" style="width:100px">Tribe</div><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--ember)"></div></div><div class="bar-val">45</div></div>
+      </div>
+    </div>
+
+    <!-- HOW TO EARN -->
+    <div class="card green-border" style="margin-bottom:14px">
+      <div class="card-label" style="color:var(--forge-green)">How to Earn</div>
+      <div style="margin-top:10px">
+        <div class="earn-row"><span>Daily checklist item</span><span class="earn-pts">+10–20 pts</span></div>
+        <div class="earn-row"><span>Tonight's Forge micro-habit</span><span class="earn-pts">+20 pts</span></div>
+        <div class="earn-row"><span>Post in the Tribe</span><span class="earn-pts">+20 pts</span></div>
+        <div class="earn-row"><span>Reply to another dad</span><span class="earn-pts">+10 pts</span></div>
+        <div class="earn-row"><span>Complete husband check-in</span><span class="earn-pts">+75 pts</span></div>
+        <div class="earn-row"><span>7-day streak bonus</span><span class="earn-pts" style="color:var(--gold)">+50 pts 🔥</span></div>
+        <div class="earn-row"><span>30-day streak bonus</span><span class="earn-pts" style="color:var(--gold)">+200 pts 🏆</span></div>
+      </div>
+    </div>
+
+    <!-- LEVELS -->
+    <div class="s-head">Dad Levels</div>
+    <div style="margin-bottom:14px">
+      <div class="level-row locked"><div class="level-icon">🌱</div><div><div class="level-name">Level 1 — The Waking Dad</div><div class="level-sub">0–200 pts · Awareness is beginning. You showed up.</div></div></div>
+      <div class="level-row locked"><div class="level-icon">🔑</div><div><div class="level-name">Level 2 — The Intentional Dad</div><div class="level-sub">200–400 pts · Choosing presence over default.</div></div></div>
+      <div class="level-row locked"><div class="level-icon">🔥</div><div><div class="level-name">Level 3 — The Dedicated Dad</div><div class="level-sub">400–600 pts · Habits forming. Connection real.</div></div></div>
+      <div class="level-row current"><div class="level-icon">⚒</div><div><div class="level-name current">Level 4 — The Consistent Father ← YOU</div><div class="level-sub">600–1000 pts · Your kids feel your intentionality.</div></div></div>
+      <div class="level-row locked"><div class="level-icon">🏛</div><div><div class="level-name">Level 5 — The Legacy Dad</div><div class="level-sub">1000+ pts — 250 pts away. You're close.</div></div></div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="s-head">Forge Badges</div>
+    <div class="ach-row"><div class="ach-icon">🔥</div><div><div class="ach-name">First Week Forge</div><div class="ach-sub">7 consecutive days showing up</div></div><div class="ach-badge">Earned</div></div>
+    <div class="ach-row"><div class="ach-icon">💬</div><div><div class="ach-name">Tribe Member</div><div class="ach-sub">First real post in the community</div></div><div class="ach-badge">Earned</div></div>
+    <div class="ach-row"><div class="ach-icon">💍</div><div><div class="ach-name">Strong Foundation</div><div class="ach-sub">Husband check-in 3 weeks in a row</div></div><div class="ach-badge">Earned</div></div>
+    <div class="ach-row locked"><div class="ach-icon">🌙</div><div><div class="ach-name">Bedtime King</div><div class="ach-sub">Bedtime Bridge 14 nights straight</div></div></div>
+    <div class="ach-row locked"><div class="ach-icon">🚗</div><div><div class="ach-name">The Car Ride</div><div class="ach-sub">Shoulder-to-shoulder with your teen 5 times</div></div></div>
+    <div class="ach-row locked"><div class="ach-icon">📖</div><div><div class="ach-name">Real Talk</div><div class="ach-sub">10 Tribe posts that received 5+ fires</div></div></div>
+    <div class="ach-row locked"><div class="ach-icon">🏛</div><div><div class="ach-name">Legacy Dad</div><div class="ach-sub">Reach Level 5. You became what your kids needed.</div></div></div>
+
+  </div>
+</div><!-- /score -->
+
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="bnav active" onclick="page('home',this)"><div class="bnav-icon">⚒</div><div class="bnav-lbl">Home</div></button>
+  <button class="bnav" onclick="page('tips',this)"><div class="bnav-icon">📋</div><div class="bnav-lbl">Tips</div></button>
+  <button class="bnav" onclick="page('husband',this)"><div class="bnav-icon">💍</div><div class="bnav-lbl">Husband</div></button>
+  <button class="bnav" onclick="page('tribe',this)"><div class="bnav-icon">🔥</div><div class="bnav-lbl">Tribe</div></button>
+  <button class="bnav" onclick="page('score',this)"><div class="bnav-icon">🏆</div><div class="bnav-lbl">Score</div></button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let score = 750;
+
+const QUOTES = [
+  { t: "It is not what you do for your children, but what you have taught them to do for themselves that will make them successful human beings.", a: "Ann Landers" },
+  { t: "The most important thing a father can do for his children is to love their mother.", a: "Theodore Hesburgh" },
+  { t: "It is easier to build strong children than to repair broken men.", a: "Frederick Douglass" },
+  { t: "Children need your presence more than your presents.", a: "Jesse Jackson" },
+  { t: "What a father says to his children is not heard by the world, but it will be heard by posterity.", a: "Jean Paul" },
+  { t: "Your children will become who you are. So be who you want them to be.", a: "David Bly" },
+  { t: "Fatherhood is not a part-time job. But it can be done brilliantly in the pockets of time available to you.", a: "Forge Community" },
+  { t: "A man who is intentional about ten minutes with his child will outperform one who is accidentally present for ten hours.", a: "Dr. Gordon Neufeld" },
+  { t: "The greatest legacy a man can leave is not money or possessions — it's a child who knows they were loved.", a: "Forge Community" },
+  { t: "Be the dad today that you needed as a kid.", a: "Forge Community" },
+];
+let qi = 0;
+
+function page(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bnav').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function updateUI() {
+  ['score-num','score-stat'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=score; });
+  document.getElementById('xp-text').textContent = score + ' / 1000 XP';
+  const pct = Math.min(score/1000,1);
+  document.getElementById('xp-fill').style.width = (pct*100)+'%';
+  const offset = 283 - (283 * pct);
+  document.getElementById('score-ring').style.strokeDashoffset = offset;
+}
+
+function toast(msg, fire) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (fire ? ' fire' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function chk(el, pts, cat) {
+  const li = el.closest('li');
+  const tx = li.querySelector('.cl-text');
+  if (el.classList.contains('done')) {
+    el.classList.remove('done'); tx.classList.remove('done');
+    score = Math.max(0, score - pts);
+  } else {
+    el.classList.add('done'); tx.classList.add('done');
+    score += pts;
+    toast('+' + pts + ' pts — ' + cat.charAt(0).toUpperCase() + cat.slice(1), true);
+  }
+  updateUI();
+}
+
+function habitDone() {
+  const btn = document.getElementById('habit-btn');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = '✓ Done';
+  btn.style.background = 'var(--forge-green)';
+  score += 20; updateUI();
+  toast('+20 pts — Forge Habit Complete', false);
+}
+
+function nextQuote() {
+  qi = (qi + 1) % QUOTES.length;
+  document.getElementById('home-q').textContent = QUOTES[qi].t;
+  document.getElementById('home-qa').textContent = '— ' + QUOTES[qi].a;
+}
+
+function filt(btn, cat) {
+  document.querySelectorAll('.ftag').forEach(f => f.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#tips-container .tip').forEach(t => {
+    const cats = (t.dataset.c||'').split(' ');
+    t.style.display = (cat==='all'||cats.includes(cat)) ? '' : 'none';
+  });
+}
+
+function openCompose() {
+  document.getElementById('compose-form').classList.add('open');
+  document.getElementById('post-text').focus();
+}
+function closeCompose() {
+  document.getElementById('compose-form').classList.remove('open');
+  document.getElementById('post-text').value = '';
+}
+
+const catMap = {
+  win: { pill: '💪 WIN', bg: 'rgba(45,158,107,0.1)', c: 'var(--forge-green)' },
+  real: { pill: '🔥 REAL TALK', bg: 'var(--fire-glow)', c: 'var(--fire)' },
+  tip: { pill: '⚒ TIP', bg: 'var(--ember-dim)', c: 'var(--ember)' },
+  accountability: { pill: '🪝 ACCOUNTABILITY', bg: 'var(--steel-dim)', c: 'var(--steel)' },
+  question: { pill: '❓ QUESTION', bg: 'var(--steel-dim)', c: 'var(--steel)' },
+  husband: { pill: '💍 HUSBAND', bg: 'rgba(139,108,240,0.1)', c: '#8b6cf0' },
+};
+
+function submitPost() {
+  const text = document.getElementById('post-text').value.trim();
+  const cat = document.getElementById('post-cat').value;
+  if (!text) return;
+  const cm = catMap[cat];
+  const feed = document.getElementById('feed');
+  const d = document.createElement('div');
+  d.className = 'post-card';
+  d.style.borderColor = 'rgba(232,93,4,0.4)';
+  d.innerHTML = `
+    <div class="post-header">
+      <div class="av" style="background:var(--fire);color:#fff">ME</div>
+      <div><div class="post-name">You <span style="color:var(--forge-green);font-size:10px;font-family:'DM Mono',monospace">✓ Now</span></div><div class="post-meta">Level 4 · Just now</div></div>
+    </div>
+    <div class="cat-pill" style="background:${cm.bg};color:${cm.c}">${cm.pill}</div>
+    <div class="post-body">${text.replace(/\n/g,'<br>')}</div>
+    <div class="post-acts">
+      <button class="pact" onclick="like(this,0)">🔥 0 Relate</button>
+      <button class="pact" onclick="toggleReplies(this)">💬 Reply</button>
+      <button class="pact">🔖 Save</button>
+    </div>
+    <div class="replies">
+      <div class="reply-row" style="margin-top:0">
+        <input class="rep-input" placeholder="Reply..." onkeydown="sendReply(event,this)">
+        <button class="btn btn-fire btn-sm" onclick="sendReplyBtn(this)">Send</button>
+      </div>
+    </div>
+  `;
+  feed.insertBefore(d, feed.firstChild);
+  closeCompose();
+  score += 20; updateUI();
+  toast('+20 pts — Posted to the Tribe', false);
+}
+
+function like(btn, n) {
+  btn.classList.toggle('on');
+  const count = parseInt(btn.textContent.match(/\d+/)||[n]) + (btn.classList.contains('on') ? 1 : -1);
+  btn.textContent = '🔥 ' + Math.max(0,count) + ' Relate';
+  if (btn.classList.contains('on')) { score += 5; updateUI(); }
+}
+
+function toggleReplies(btn) {
+  const card = btn.closest('.post-card');
+  const r = card.querySelector('.replies');
+  r.classList.toggle('open');
+  if (r.classList.contains('open')) {
+    const inp = r.querySelector('.rep-input');
+    if (inp) setTimeout(() => inp.focus(), 80);
+  }
+}
+
+function sendReply(e, input) {
+  if (e.key === 'Enter') doReply(input);
+}
+function sendReplyBtn(btn) {
+  const input = btn.closest('.reply-row').querySelector('.rep-input');
+  doReply(input);
+}
+function doReply(input) {
+  const val = input.value.trim();
+  if (!val) return;
+  const wrap = input.closest('.replies');
+  const row = input.closest('.reply-row');
+  const r = document.createElement('div');
+  r.className = 'reply';
+  r.innerHTML = `
+    <div class="rep-av" style="background:var(--fire);color:#fff">ME</div>
+    <div class="rep-body">
+      <div class="rep-name">You <span class="rep-time">· Just now</span></div>
+      <div class="rep-text">${val}</div>
+    </div>
+  `;
+  wrap.insertBefore(r, row);
+  input.value = '';
+  score += 10; updateUI();
+  toast('+10 pts — Replied to the Tribe', false);
+}
+
+// INIT
+document.getElementById('hero-date').textContent = new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date());
+setTimeout(updateUI, 500);
+</script>
+</body>
+</html>
